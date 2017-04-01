@@ -13,6 +13,5 @@ clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 while True:
 	ret,frame = cap.read()
 	data = np.array(frame)
-	dataToSend = pickle.dumps(data)
-	size = sys.getsizeof(dataToSend)
+	dataToSend = cv2.resize(frame, (112, 92))
 	clientsocket.sendto(dataToSend, (UDP_IP, UDP_PORT))
