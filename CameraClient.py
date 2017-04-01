@@ -13,5 +13,5 @@ clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 while True:
 	ret,frame = cap.read()
 	data = np.array(frame)
-	dataToSend = cv2.resize(frame, (112, 92))
+	dataToSend = cv2.resize(frame, (160, 120))
 	clientsocket.sendto(dataToSend, (UDP_IP, UDP_PORT))
