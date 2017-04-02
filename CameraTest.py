@@ -7,7 +7,7 @@ import struct
 cam = cv2.VideoCapture(0)
 while True:
 	ret_val, img = cam.read()
-	data = cv2.resize(img, (160,120))
+	data = cv2.resize(img, (180,121))
 	size = sys.getsizeof(data)
 	print(size)
 	
