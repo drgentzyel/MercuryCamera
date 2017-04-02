@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import socket
 import sys
+import pickle
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 8765
@@ -27,16 +28,16 @@ try:
 	#=================================================================
 	# Front Camera
 		ret_front,frame_front = cap_front.read()
-		#data_front = np.array(frame_front)
-		dataToSend_front = cv2.resize(frame_front, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+		data_front = cv2.resize(frame_front, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+		dataToSend_front = pickle.dumps([0, data_front])
 		clientsocket.sendto(dataToSend_front, (UDP_IP, UDP_PORT))
 	#=================================================================
 	
 	#=================================================================
 	# Rear Camera
 		ret_rear,frame_rear = cap_rear.read()
-		#data = np.array(frame)
-		dataToSend_rear = cv2.resize(frame_rear, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+		data_rear = cv2.resize(frame_rear, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+		dataToSend_rear = pickle.dumps([1, data_rear])
 		clientsocket.sendto(dataToSend_rear, (UDP_IP, UDP_PORT))
 	#=================================================================
 	
