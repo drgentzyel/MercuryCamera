@@ -42,6 +42,8 @@ try:
 	#=================================================================
 	
 except KeyboardInterrupt:
+	cap_front.release()
+	cap_rear.release()
 	print('Closing the Client')
 	print('Client Closed')
 	pass
