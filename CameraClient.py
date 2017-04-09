@@ -31,32 +31,35 @@ try:
 	while True:
 	#=================================================================
 	# Front Camera
-		# Grab frame from front camera
-		ret_front,frame_front = cap_front.read()
+		if cap_front.isOpened():
+			# Grab frame from front camera
+			ret_front,frame_front = cap_front.read()
+			
+			# resize frame to a smaller size, uses INTER_AREA interpolation
+			data_front = cv2.resize(frame_front, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+			
+			# Create list of data with which camera its from and the frame info
+			dataToSend_front = pickle.dumps([0, data_front])
+			
+			# Send packet
+			clientsocket.sendto(dataToSend_front, (UDP_IP, UDP_PORT))
 		
-		# resize frame to a smaller size, uses INTER_AREA interpolation
-		data_front = cv2.resize(frame_front, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
-		
-		# Create list of data with which camera its from and the frame info
-		dataToSend_front = pickle.dumps([0, data_front])
-		
-		# Send packet
-		clientsocket.sendto(dataToSend_front, (UDP_IP, UDP_PORT))
 	#=================================================================
 	
 	#=================================================================
 	# Rear Camera
-		# Grab frame from rear camera
-		ret_rear,frame_rear = cap_rear.read()
-		
-		# resize frame to a smaller size, uses INTER_AREA interpolation
-		data_rear = cv2.resize(frame_rear, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
-		
-		# Create list of data with which camera its from and the frame info
-		dataToSend_rear = pickle.dumps([1, data_rear])
-		
-		# Send Packet
-		clientsocket.sendto(dataToSend_rear, (UDP_IP, UDP_PORT))
+		if cap_rear.isOpened():
+			# Grab frame from rear camera
+			ret_rear,frame_rear = cap_rear.read()
+			
+			# resize frame to a smaller size, uses INTER_AREA interpolation
+			data_rear = cv2.resize(frame_rear, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
+			
+			# Create list of data with which camera its from and the frame info
+			dataToSend_rear = pickle.dumps([1, data_rear])
+			
+			# Send Packet
+			clientsocket.sendto(dataToSend_rear, (UDP_IP, UDP_PORT))
 	#=================================================================
 	
 except KeyboardInterrupt:
