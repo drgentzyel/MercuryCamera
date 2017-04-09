@@ -38,33 +38,25 @@ print ('Please close server before closing the client')
 
 # Main loop for the server
 while True:
-	if s.recvfrom(DATA_SIZE):
-		# Recieve packet from Client
-		data_front, addr = s.recvfrom(DATA_SIZE)
-		data_rear, addr = s.recvfrom(DATA_SIZE)
-	else:
-		data_front = None
+	# Recieve packet from Client
+	data_front, addr = s.recvfrom(DATA_SIZE)
+
+	# Store packet into stored_data
+	stored_data = pickle.loads(data_front)
 	
-	if data_front != None:
-		# Store packet into stored_data
-		stored_data = pickle.loads(data_front)
-		
-		# Recieve Frame Info from packet
-		frame_front = np.fromstring(stored_data[1], dtype = np.uint8)
-		
-		# Reshape data into proper picture size
-		frame_front = frame_front.reshape(SHRUNK_WIDTH, SHRUNK_HEIGHT, 3)
-		
-		# Resize picture to be actually viewable, uses INTER_CUBIC interpolation
-		frame_front = cv2.resize(frame_front, (LARGE_WIDTH, LARGE_HEIGHT), interpolation = cv2.INTER_CUBIC)
-		
-		#========================================================
-		# This if block is used to flip the image on my tablet
-		if platform.machine() == 'AMD64':
-			frame_front = cv2.flip(frame_front,0,1)
-	else:
-		stored_data = [-1, "Nothing Here boss"]
-		
+	# Recieve Frame Info from packet
+	frame_front = np.fromstring(stored_data[1], dtype = np.uint8)
+	
+	# Reshape data into proper picture size
+	frame_front = frame_front.reshape(SHRUNK_WIDTH, SHRUNK_HEIGHT, 3)
+	
+	# Resize picture to be actually viewable, uses INTER_CUBIC interpolation
+	frame_front = cv2.resize(frame_front, (LARGE_WIDTH, LARGE_HEIGHT), interpolation = cv2.INTER_CUBIC)
+	
+	#========================================================
+	# This if block is used to flip the image on my tablet
+	if platform.machine() == 'AMD64':
+		frame_front = cv2.flip(frame_front,0,1)
 	#========================================================
 	
 	# Decode which camera frame is from and display it to the proper window
