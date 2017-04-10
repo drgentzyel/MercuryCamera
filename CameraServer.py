@@ -6,6 +6,7 @@ import numpy as np
 import struct
 import platform
 import pickle
+import time
 
 HOST = 'localhost' 
 PORT = 8765
@@ -14,15 +15,22 @@ SHRUNK_HEIGHT = 127
 SHRUNK_WIDTH = 170
 LARGE_WIDTH = 640
 LARGE_HEIGHT = 480
+connected = False
+currTime = 0
+timeout = 2
+addr = None
+data_front = None
 
 
 data = ""
 data_front = None
-offline_pic = cv2.imread("Stream Offline.jpg")
 
 # Creates 2 named windows, one for the front camera and one for the rear camera
-cv2.namedWindow("Front Camera")
-cv2.namedWindow("Rear Camera")
+#cv2.namedWindow("Front Camera")
+#cv2.namedWindow("Rear Camera")
+
+# Sets socket default timeout
+socket.setdefaulttimeout(1) 
 
 # Creates a socket s, and displays a message that it has been created
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -35,41 +43,46 @@ print ('Socket Bind Complete')
 # Text describing how to close the server
 print ('Press esc to close stream')
 print ('Please close server before closing the client')
-
+	
 # Main loop for the server
 while True:
-	# Recieve packet from Client
-	data_front, addr = s.recvfrom(DATA_SIZE)
-
-	# Store packet into stored_data
-	stored_data = pickle.loads(data_front)
 	
-	# Recieve Frame Info from packet
-	frame_front = np.fromstring(stored_data[1], dtype = np.uint8)
+	try:
+		# Recieve packet from Client
+		data_front, addr = s.recvfrom(DATA_SIZE)
+		connected = True
+	except socket.timeout:
+		print("Timed Out")
+		connected = False
 	
-	# Reshape data into proper picture size
-	frame_front = frame_front.reshape(SHRUNK_WIDTH, SHRUNK_HEIGHT, 3)
+	if connected:
+		# Store packet into stored_data
+		stored_data = pickle.loads(data_front)
+		
+		# Recieve Frame Info from packet
+		frame_front = np.fromstring(stored_data[1], dtype = np.uint8)
+		
+		# Reshape data into proper picture size
+		frame_front = frame_front.reshape(SHRUNK_WIDTH, SHRUNK_HEIGHT, 3)
+		
+		# Resize picture to be actually viewable, uses INTER_CUBIC interpolation
+		frame_front = cv2.resize(frame_front, (LARGE_WIDTH, LARGE_HEIGHT), interpolation = cv2.INTER_CUBIC)
+		
+		#========================================================
+		# This if block is used to flip the image on my tablet
+		if platform.machine() == 'AMD64':
+			frame_front = cv2.flip(frame_front,0,1)
+		#========================================================
+		
+		# Decode which camera frame is from and display it to the proper window
+		if stored_data[0] == 0:
+			cv2.imshow("Front Camera", frame_front)
+		else:
+			cv2.imshow("Rear Camera", frame_front)
 	
-	# Resize picture to be actually viewable, uses INTER_CUBIC interpolation
-	frame_front = cv2.resize(frame_front, (LARGE_WIDTH, LARGE_HEIGHT), interpolation = cv2.INTER_CUBIC)
-	
-	#========================================================
-	# This if block is used to flip the image on my tablet
-	if platform.machine() == 'AMD64':
-		frame_front = cv2.flip(frame_front,0,1)
-	#========================================================
-	
-	# Decode which camera frame is from and display it to the proper window
-	if stored_data[0] == 0:
-		cv2.imshow("Front Camera", frame_front)
-	elif stored_data[0] == 1:
-		cv2.imshow("Rear Camera", frame_front)
-	else:
-		cv2.imshow("Front Camera", offline_pic)
-		cv2.imshow("Rear Camera", offline_pic)
-	
-	# Sets data_front to null so checks can be made
-	data_front = None
+		# Sets data_front to null so checks can be made
+		data_front = None
+		addr = None
 	
 	# Checks if esc has been pressed and closes out program if it has
 	if cv2.waitKey(5) == 27: 
