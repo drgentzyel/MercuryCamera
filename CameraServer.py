@@ -16,10 +16,9 @@ SHRUNK_WIDTH = 170
 LARGE_WIDTH = 640
 LARGE_HEIGHT = 480
 connected = False
-currTime = 0
-timeout = 2
 addr = None
 data_front = None
+first = True
 
 
 data = ""
@@ -51,8 +50,12 @@ while True:
 		# Recieve packet from Client
 		data_front, addr = s.recvfrom(DATA_SIZE)
 		connected = True
+		if first:
+			print("Connected")
+			first = False
 	except socket.timeout:
 		print("Timed Out")
+		first = True
 		connected = False
 	
 	if connected:
