@@ -37,6 +37,9 @@ try:
 			# Grab frame from front camera
 			ret_front,frame_front = cap_front.read()
 			
+			# convert to grayscale
+			cv2.cvtColor(frame_front, frame_front, cv2.COLOR_RGB2GRAY)
+			
 			# resize frame to a smaller size, uses INTER_AREA interpolation
 			data_front = cv2.resize(frame_front, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
 			
@@ -54,6 +57,9 @@ try:
 			# Grab frame from rear camera
 			ret_rear,frame_rear = cap_rear.read()
 			
+			# convert to grayscale
+			cv2.cvtColor(frame_front, frame_front, cv2.COLOR_RGB2GRAY)
+			
 			# resize frame to a smaller size, uses INTER_AREA interpolation
 			data_rear = cv2.resize(frame_rear, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
 			
@@ -69,6 +75,9 @@ try:
 		if cap_claw.isOpened():
 			# Grab frame from front camera
 			ret_front,frame_claw = cap_claw.read()
+			
+			# convert to grayscale
+			cv2.cvtColor(frame_front, frame_front, cv2.COLOR_RGB2GRAY)
 			
 			# resize frame to a smaller size, uses INTER_AREA interpolation
 			data_claw = cv2.resize(frame_claw, (SHRUNK_HEIGHT, SHRUNK_WIDTH), interpolation = cv2.INTER_AREA)
